@@ -1,0 +1,10 @@
+RUN_PATH|map_AGjinta11.json
+RUN_QUEST|静步走.json
+RUN_PATH_PRECISE|precision_AGjinta22.json
+RUN_QUEST|静步走.json
+RUN_PATH_FACING|target_AGfeixingyuanmianxiang.json
+RUN_QUEST|F9.json
+CLICK_OCR|img_kongyunfuwu.png
+CLICK_OCR22|img_AGfeixingditu.png,-65,-60
+SLEEP|210
+RUN_PATH|map_12_20roadB.json

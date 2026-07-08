@@ -1,0 +1,7 @@
+CLICK_OCR|img_shifanglinghun.png
+precision_12_20_ghost_runA.json
+RUN_QUEST|F9.json
+CLICK_OCR|img_fuhuo.png
+CLICK_OCR|img_jieshou.png
+CLICK_OCR|img_jieshou.png
+map_12_20_ghost_runB.json

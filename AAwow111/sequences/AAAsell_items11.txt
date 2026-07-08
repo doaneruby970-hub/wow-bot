@@ -1,0 +1,40 @@
+# 主城卖东西序列示例
+# 格式: 动作类型|参数
+#
+# 四种寻路指令:
+#   RUN_PATH|路书.json         → zuobiaoxunlubofang.py   长途跨图
+#   RUN_PATH_CROSS|路书.json   → zuobiaoxunlubofang11.py 跨图冲刺
+#   RUN_PATH_PRECISE|路书.json → zuobiaoxunlubofang22.py 主城精确走位
+#   RUN_PATH_FACING|路书.json  → zuobiaomianxiangbofang.py 坐标+面向校准
+
+# 1. 精确走到商人旁边（主城内用高精度）
+RUN_PATH_PRECISE|paths/city_to_vendor.json
+SLEEP|2
+
+# 2. 点击商人NPC
+CLICK_IMG|imgs/vendor_npc.png
+WAIT_IMG|imgs/shop_window.png
+SLEEP|0.5
+
+# 3. 卖出垃圾
+CLICK_IMG|imgs/sell_junk_btn.png
+SLEEP|1
+
+# 4. 关闭商店
+PRESS_KEY|escape
+SLEEP|0.5
+
+# 5. 跑回打怪区域（跨图用冲刺）
+RUN_PATH_CROSS|paths/city_to_farm.json
+
+
+CLICK_OCR22 | img_7.png,-240,-175
+CLICK_OCR22 | img_8.png,100,50
+CLICK_OCR22 | button.png,0,-100
+
+LOOP_START|0                            ← 无限循环开始
+CLICK_OCR22|img_wupin22.png,-240,-175
+SLEEP|30
+CLICK_OCR|img_kaishipaimai.png
+LOOP_BREAK_IF_IMG|img_3.png            ← 必须写这一行！
+LOOP_END

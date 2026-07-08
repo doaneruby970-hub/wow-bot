@@ -1,0 +1,13 @@
+RUN_PATH|map_AGchukou8-12A.json
+RUN_PATH_CROSS|path_AGchukou8-12B.json
+RUN_PATH|map_8-12C.json
+RUN_PATH|map_12feixingdianxunluA.json
+RUN_PATH_CROSS|path_12feixingdianxunluB.json
+RUN_PATH|map_12feixingdianxunluC.json
+RUN_PATH|map_12feixingdianxunluD.json
+RUN_QUEST|静步走.json
+RUN_PATH_PRECISE|precision_12feixingdianxunluE.json
+precision_12feixingdianxunluE.json
+RUN_QUEST|静步走.json
+RUN_QUEST|F9.json
+

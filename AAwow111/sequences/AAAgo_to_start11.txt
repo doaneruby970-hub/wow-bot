@@ -1,0 +1,19 @@
+# 去奥格瑞玛指定起点序列
+# 触发条件：切换到新阶段时，检测到不在起点（map_id != 1454 或坐标超出容差）
+#
+# 动作说明：
+#   CLICK_OCR|图片名   → 识图点击（带30秒超时，图片放 imgs/ 目录下）
+#   WAIT_IMG|图片名    → 等待图片出现才继续
+#   RUN_PATH_PRECISE|路书.json → 主城内高精度走位
+#   SLEEP|秒数         → 等待
+
+# 1. 使用炉石之心/传送石回到奥格瑞玛（识图点击背包里的石头）
+CLICK_OCR|hearthstone.png
+SLEEP|10
+
+# 2. 等待奥格瑞玛加载完成（等出现小地图标志或某个UI元素）
+WAIT_IMG|orgrimmar_minimap.png
+SLEEP|2
+
+# 3. 从落点精确走到指定起点位置
+RUN_PATH_PRECISE|paths/orgrimmar_to_startpoint.json

@@ -1,0 +1,9 @@
+# YOLO dataset config for World of Warcraft bot:
+path: ./datasets  # Set this to your dataset root directory
+train: train/val
+val: train/train
+
+names:
+  0: monster
+  1: red_health_bar
+  2: yellow_health_bar

@@ -1,0 +1,10 @@
+ultralytics>=8.0.0
+opencv-python>=4.8.0
+numpy>=1.24.0
+pyautogui>=0.9.54
+pydirectinput>=1.0.4
+keyboard>=0.13.5
+Pillow>=10.0.0
+mss>=9.0.1
+pynput>=1.7.6
+pywin32>=306

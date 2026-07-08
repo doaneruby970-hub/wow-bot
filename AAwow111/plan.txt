@@ -1,0 +1,16 @@
+# 格式: 起始等级/结束等级/跑路文件/打怪文件/城镇序列(可选)/死亡序列(可选)/起点初始化序列(可选)
+#
+# 跑路文件: 支持 .json（单段跑路）或 .txt（多动作序列，可组合多个寻路+点击等）
+# 城镇序列触发条件: 背包满(free=0) 或 血量低于30%
+# 死亡序列触发条件: hp数值为0 持续3秒
+# 起点初始化序列: 仅在切换到该阶段时执行一次，检测不在起点才触发
+#
+# 示例（跑路用单个json）:
+# 1/6/1_6_road.json/1_6_combat.json/back_to_town.txt/ghost_run.txt/go_to_start.txt
+#
+# 示例（跑路用多动作txt，里面可以有多个 RUN_PATH / CLICK_OCR 等）:
+# 1/6/1_6_road.txt/1_6_combat.json/back_to_town.txt/ghost_run.txt/go_to_start.txt
+
+1/6/1_6_road.txt/1_6_combat.json/back_to_town.txt/ghost_run.txt/go_to_start.txt
+6/13/6_12__road.txt/map_14111.json/back_to_town.txt/6_12__ghost_run.txt/go_to_start.txt
+13/20/12_20__road.txt/map_12_20111C.json/back_to_town.txt/12_20_ghost_run.txt/go_to_start.txt

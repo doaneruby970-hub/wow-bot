@@ -1,0 +1,8 @@
+# 格式: 任务ID/等级/类型/描述/执行序列
+# 类型: FP=飞行点, QUEST=任务, DUNGEON=副本
+# 任务ID用于记录完成状态，不要重复
+
+# 飞行点任务示例
+fp_gadgetzan_16/16/FP/加基森飞行点/fp_gadgetzan12.txt
+fp_tanaris_42/42/FP/塔纳利斯营地飞行点/sequences/fp_tanaris.txt
+fp_winterspring_50/50/FP/冬泉谷飞行点/sequences/fp_winterspring.txt
