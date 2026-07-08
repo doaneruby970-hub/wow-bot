@@ -47,7 +47,7 @@ pip install ultralytics opencv-python numpy pyautogui pydirectinput keyboard pil
 ## 安装
 
 ```bash
-git clone <repo-url> wow-bot
+git clone https://github.com/doaneruby970-hub/wow-bot.git wow-bot
 cd wow-bot
 pip install ultralytics opencv-python numpy pyautogui pydirectinput keyboard pillow mss pywin32
 ```
