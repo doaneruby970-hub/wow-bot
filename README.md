@@ -1,30 +1,30 @@
 # wow-bot
 
-魔兽世界（WoW Classic）自动化机器人。基于像素级屏幕读取、YOLOv8 视觉识别、坐标路书导航和有限状态机（FSM）战斗逻辑，实现从打怪、寻路、拾取到回城补给的全自动挂机流程。
+World of Warcraft (WoW Classic) automation bot. Uses pixel-level screen reading, YOLOv8 visual recognition, coordinate waypoint navigation, and a finite state machine (FSM) for combat logic — enabling a fully automated grinding loop from combat, pathfinding, and looting to town-return resupply.
 
-## 功能特性
+## Features
 
-- **游戏状态读取** -- 通过 WoW 插件 `MyMonitor` 在屏幕顶部绘制像素色块，Python 端截图解码获取：玩家坐标、朝向、地图 ID、HP/MP 数值与百分比、战斗状态、目标血量、目标距离、玩家等级等实时数据
-- **YOLOv8 视觉识别** -- 训练并部署 YOLO 模型，识别屏幕上的红名怪物血条和尸体，用于索敌和拾取
-- **坐标路书录制与播放** -- 手动跑图时按时间间隔录制坐标到 JSON 路书文件，自动导航时按路点依次寻路，支持原地转向 + 直线行进的坦克式导航
-- **FSM 战斗状态机** -- 巡逻（PATROL） -> 发现目标（FOUND_TARGET） -> 点击选中（CHECK_SELECTION） -> 方向对齐（ALIGN_DIRECTION） -> 战斗（COMBAT） -> 找尸体拾取 -> 恢复（RECOVERY）的完整循环
-- **分区域扇形转向** -- 根据目标在屏幕上的远/中/近位置，使用不同倍率的键盘转向时长，精准对准目标
-- **背对/重合检测** -- 战斗中若持续攻击但目标未掉血，自动后退拉开距离重新站位
-- **主调度器** -- `Master.py` 按等级区间分阶段调度跑路和打怪脚本，支持死亡复活、背包满回城、飞行点开通等特殊任务，以及基于 TXT 序列文件的可编程动作编排
-- **OCR 识图点击** -- 基于 pyautogui 模板匹配，识别并点击游戏 UI 按钮（如接受任务、确认对话框等）
-- **背包监控** -- 解析 WoW SavedVariables 的 `MyBag.lua`，实时监控背包空余格数
-- **训练数据采集** -- 自动间隔截图工具，用于采集 YOLO 训练样本
+- **Game state reading** -- The WoW addon `MyMonitor` draws pixel color blocks at the top of the screen. The Python side captures and decodes them to obtain real-time data: player coordinates, facing direction, map ID, HP/MP values and percentages, combat status, target health, target distance, player level, etc.
+- **YOLOv8 visual recognition** -- Trains and deploys YOLO models to detect red-nameplate enemy health bars and corpses on screen for target acquisition and looting.
+- **Coordinate waypoint recording and playback** -- During manual map traversal, coordinates are recorded at timed intervals into JSON waypoint files. During automated navigation, the bot follows waypoints sequentially, supporting tank-style navigation (rotate-in-place + move-forward).
+- **FSM combat state machine** -- PATROL -> FOUND_TARGET -> CHECK_SELECTION -> ALIGN_DIRECTION -> COMBAT -> find and loot corpse -> RECOVERY: a complete loop.
+- **Zoned radial turning** -- Uses different keyboard turn durations based on the target's near/mid/far screen position for precise target alignment.
+- **Back-facing/stuck detection** -- During combat, if the bot keeps attacking but the target takes no damage, it automatically backs up to reposition.
+- **Master scheduler** -- `Master.py` orchestrates travel and grinding scripts by level brackets, handles death respawn, full-bag town return, flight point unlocks, and programmable action sequences via TXT sequence files.
+- **OCR template-match clicking** -- Uses pyautogui template matching to recognize and click game UI buttons (accept quest, confirm dialogs, etc.).
+- **Bag monitoring** -- Parses WoW SavedVariables `MyBag.lua` to monitor available bag slots in real time.
+- **Training data collection** -- Auto-interval screenshot tool for collecting YOLO training samples.
 
-## 环境要求
+## Requirements
 
 - Windows 10/11
 - Python 3.8+
-- NVIDIA 显卡（YOLO 推理/训练推荐，CPU 也可运行但较慢）
-- 魔兽世界经典怀旧服（WoW Classic）
+- NVIDIA GPU (recommended for YOLO inference/training; CPU works but is slower)
+- World of Warcraft Classic
 
-### Python 依赖
+### Python Dependencies
 
-核心依赖包：
+Core dependencies:
 
 ```
 ultralytics>=8.0.0
@@ -38,13 +38,13 @@ mss
 pywin32
 ```
 
-安装命令：
+Installation:
 
 ```bash
 pip install ultralytics opencv-python numpy pyautogui pydirectinput keyboard pillow mss pywin32
 ```
 
-## 安装
+## Installation
 
 ```bash
 git clone https://github.com/doaneruby970-hub/wow-bot.git wow-bot
@@ -52,137 +52,137 @@ cd wow-bot
 pip install ultralytics opencv-python numpy pyautogui pydirectinput keyboard pillow mss pywin32
 ```
 
-## 配置
+## Configuration
 
-### 1. 安装 WoW 插件
+### 1. Install WoW Addon
 
-将项目根目录下的 `MyMonitor` 插件文件夹放入魔兽世界的 `Interface/AddOns/` 目录。该插件依赖 `RangeDisplay` 插件提供测距功能，请一并安装。
+Place the `MyMonitor` addon folder from the project root into WoW's `Interface/AddOns/` directory. This addon depends on the `RangeDisplay` addon for distance measurement; install it as well.
 
-**插件结构：**
+**Addon structure:**
 ```
 World of Warcraft\_classic_\Interface\AddOns\MyMonitor\
     MyMonitor.toc
     MyMonitor.lua
 ```
 
-### 2. 训练 YOLO 模型
+### 2. Train YOLO Models
 
-项目需要两个 YOLO 模型：
+The project requires two YOLO models:
 
-- **怪物血条检测模型**：识别屏幕上的红名怪物。使用 `trainyolo8.py` 训练，数据集配置在 `wow_data.yaml`（类别：0=monster, 1=red_health_bar, 2=yellow_health_bar）
-- **尸体检测模型**：识别地面上的怪物尸体用于拾取。需单独训练
+- **Enemy health bar detection model**: Detects red-nameplate enemies on screen. Train using `trainyolo8.py`, dataset configured in `wow_data.yaml` (classes: 0=monster, 1=red_health_bar, 2=yellow_health_bar)
+- **Corpse detection model**: Detects monster corpses on the ground for looting. Must be trained separately.
 
-模型路径在 `botAIclaude.py` 中配置：
+Model paths are configured in `botAIclaude.py`:
 
 ```python
-MODEL_PATH = r'.\runs\detect\train2\weights\best.pt'          # 怪物血条检测
-SHITI_MODEL_PATH = r'.\WoW_Project\runs\detect\wow_shiti_v1\weights\best.pt'  # 尸体检测
+MODEL_PATH = r'.\runs\detect\train2\weights\best.pt'          # Enemy health bar detection
+SHITI_MODEL_PATH = r'.\WoW_Project\runs\detect\wow_shiti_v1\weights\best.pt'  # Corpse detection
 ```
 
-### 3. 录制路书
+### 3. Record Waypoints
 
-使用 `zuobiaoluzhi.py` 手动跑图录制坐标路书。跑图过程中按时间间隔自动记录坐标到 `paths/map_{地图ID}.json`。
+Use `zuobiaoluzhi.py` to manually traverse the map and record coordinate waypoints. During traversal, coordinates are auto-recorded at timed intervals to `paths/map_{mapID}.json`.
 
 ```bash
 python zuobiaoluzhi.py
-# 手动控制角色移动到目标路线
-# 按 Q 保存并退出
+# Manually control your character along the target route
+# Press Q to save and exit
 ```
 
-### 4. 配置调度计划
+### 4. Configure the Schedule Plan
 
-编辑 `AAwow111/plan.txt`（格式：`最低等级/最高等级/跑路文件/打怪文件/回城序列/死亡序列/起点序列`）和 `AAwow111/tasks.txt`（格式：`任务ID/触发等级/类型/描述/序列文件`）来设定自动化流程。
+Edit `AAwow111/plan.txt` (format: `minLevel/maxLevel/travelFile/grindFile/returnTownSeq/deathSeq/startSeq`) and `AAwow111/tasks.txt` (format: `taskID/triggerLevel/type/description/sequenceFile`) to set up the automation flow.
 
-## 使用方式
+## Usage
 
-### 单脚本运行
+### Running Individual Scripts
 
 ```bash
-# 坐标导航回放（从 paths/ 目录选择路书）
+# Coordinate waypoint playback (select waypoint file from paths/)
 python zuobiaoxunlubofang.py
 
-# 手动录制坐标路书
+# Manual coordinate waypoint recording
 python zuobiaoluzhi.py
 
-# 实时坐标显示
+# Real-time coordinate display
 python zuobiaoxianshi.py
 
-# 数值仪表盘（HP/MP/状态）
+# Stat dashboard (HP/MP/status)
 python xueliangshuzhi.py
 
-# YOLO 视觉猎人（自动索敌攻击）
+# YOLO visual hunter (auto target acquisition and attack)
 python hunter_logicAI.py
 
-# 完整 FSM 战斗机器人（导航+战斗+拾取）
+# Full FSM combat bot (navigation + combat + looting)
 python botAIclaude.py
 
-# 训练数据采集截图
+# Training data collection screenshot tool
 python jietu.py
 
-# YOLO 模型训练
+# YOLO model training
 python trainyolo8.py
 ```
 
-### 全自动调度运行
+### Full Auto-Schedule Run
 
 ```bash
 cd AAwow111
 python Master.py
 ```
 
-`Master.py` 将自动按照 `plan.txt` 的等级区间分阶段运行跑路和打怪脚本，并处理死亡复活、背包满回城等事件。
+`Master.py` automatically runs travel and grinding scripts by level bracket according to `plan.txt`, and handles events such as death respawn and full-bag town return.
 
-## 项目结构
+## Project Structure
 
 ```
 wow-bot/
-├── MyMonitor.lua / .toc          # WoW 插件：将游戏数据编码为屏幕顶部像素色块
-├── zuobiaoxianshi.py             # 坐标/朝向/地图ID 读取模块
-├── xueliangshuzhi.py             # HP/MP/战斗状态等数值读取模块
-├── botAIclaude.py                # 完整 FSM 战斗机器人（导航+索敌+战斗+拾取+恢复）
-├── botAI.py                      # 早期版 FSM 战斗机器人
-├── hunter_logicAI.py             # YOLO 实时索敌攻击脚本
-├── zuobiaoluzhi.py               # 坐标路书录制工具
-├── zuobiaoxunlubofang.py         # 坐标导航回放（手动选路书）
-├── zuobiaoxunlubofang11.py       # 导航回放（跨图冲刺模式）
-├── zuobiaoxunlubofang22.py       # 导航回放（主城高精度模式）
-├── zuobiaomianxiang.py           # 坐标+面向 精确录制
-├── zuobiaomianxiangbofang.py     # 坐标+面向 精确回放
-├── zidongxunlu.py                # 坦克式寻路演示
-├── shitidianji.py                # YOLO 实时尸体检测与右键拾取
-├── jietu.py                      # 自动间隔截图采集训练素材
-├── trainyolo8.py                 # YOLOv8 训练脚本
-├── aiyolo.py                     # YOLO 单张图片推理测试
-├── wowyolo.py                    # YOLO-World 自动标注脚本
-├── diagnostic.py                 # 像素色块诊断调试工具
-├── combat.py                     # 像素锚点坐标定位辅助
-├── FPTracker.py                  # 飞行点开通状态读取
-├── read_bag.py                   # 背包数据解析
-├── wow11ocr.py                   # 屏幕识图点击（模板匹配）
-├── wow22ocr.py                   # 屏幕识图偏移点击
-├── fix_names.py                  # 文件名修正工具
-├── MMMMMMyDataTracker.py         # 数据追踪实验脚本
-├── wow_data.yaml                 # YOLO 数据集配置文件
-├── paths/                        # 坐标路书 JSON 文件
-├── paths_precision/              # 精密坐标 JSON 文件
-├── quests/                       # 任务动作录制 JSON
-├── datasets/                     # YOLO 训练数据集
-├── imgs/                         # 模板匹配参考图片
-└── AAwow111/                     # 主调度器及其依赖
-    ├── Master.py                 # 全自动任务调度主程序
-    ├── plan.txt                  # 等级阶段计划
-    ├── tasks.txt                 # 特殊任务列表
-    ├── scripts/                  # Master.py 依赖的子脚本
-    ├── paths/                    # 路书文件副本
-    ├── sequences/                # TXT 动作序列文件
-    └── quests/                   # 任务动作文件
+├── MyMonitor.lua / .toc          # WoW addon: encodes game data as pixel color blocks at screen top
+├── zuobiaoxianshi.py             # Coordinate/facing/map ID reading module
+├── xueliangshuzhi.py             # HP/MP/combat status numeric reading module
+├── botAIclaude.py                # Full FSM combat bot (navigation + target acquisition + combat + looting + recovery)
+├── botAI.py                      # Earlier version FSM combat bot
+├── hunter_logicAI.py             # YOLO real-time target acquisition and attack script
+├── zuobiaoluzhi.py               # Coordinate waypoint recording tool
+├── zuobiaoxunlubofang.py         # Coordinate navigation playback (manual waypoint selection)
+├── zuobiaoxunlubofang11.py       # Navigation playback (cross-map sprint mode)
+├── zuobiaoxunlubofang22.py       # Navigation playback (capital city high-precision mode)
+├── zuobiaomianxiang.py           # Coordinate + facing precision recording
+├── zuobiaomianxiangbofang.py     # Coordinate + facing precision playback
+├── zidongxunlu.py                # Tank-style pathfinding demo
+├── shitidianji.py                # YOLO real-time corpse detection and right-click looting
+├── jietu.py                      # Auto-interval screenshot training data collection
+├── trainyolo8.py                 # YOLOv8 training script
+├── aiyolo.py                     # YOLO single-image inference test
+├── wowyolo.py                    # YOLO-World auto-labeling script
+├── diagnostic.py                 # Pixel color block diagnostic/debug tool
+├── combat.py                     # Pixel anchor coordinate positioning helper
+├── FPTracker.py                  # Flight point unlock status reader
+├── read_bag.py                   # Bag data parser
+├── wow11ocr.py                   # Screen template-match clicking
+├── wow22ocr.py                   # Screen template-match offset clicking
+├── fix_names.py                  # Filename fixer tool
+├── MMMMMMyDataTracker.py         # Data tracking experiment script
+├── wow_data.yaml                 # YOLO dataset config file
+├── paths/                        # Coordinate waypoint JSON files
+├── paths_precision/              # Precision coordinate JSON files
+├── quests/                       # Quest action recording JSON
+├── datasets/                     # YOLO training datasets
+├── imgs/                         # Template matching reference images
+└── AAwow111/                     # Master scheduler and dependencies
+    ├── Master.py                 # Full-auto task scheduler main program
+    ├── plan.txt                  # Level bracket plan
+    ├── tasks.txt                 # Special task list
+    ├── scripts/                  # Sub-scripts used by Master.py
+    ├── paths/                    # Waypoint file copies
+    ├── sequences/                # TXT action sequence files
+    └── quests/                   # Quest action files
 ```
 
-## 注意事项
+## Notes
 
-- 本项目仅供技术研究和学习参考。在魔兽世界官方服务器上使用自动化脚本违反暴雪娱乐的用户协议，可能导致账号被封禁。
-- 像素色块读取方案依赖游戏窗口不被遮挡，且需确保 WoW 插件 `MyMonitor` 正确加载运行。
-- 游戏分辨率变化会导致像素读取坐标偏移，需在代码中调整 `SCREEN_W`、`SCREEN_H` 等参数。
-- YOLO 模型需针对当前游戏画面风格重新训练，不同服务器（如经典怀旧服、正式服）的画面差异较大。
-- `pydirectinput` 模拟的是 DirectInput 键盘输入，部分反作弊系统可能检测此类输入。在私服或研究环境中使用。
-- 按下 `Page Down` 键可紧急停止所有自动化操作。
+- This project is for technical research and educational reference only. Using automation scripts on official World of Warcraft servers violates Blizzard Entertainment's Terms of Service and may result in account bans.
+- The pixel color block reading scheme requires the game window to remain unobstructed and the WoW addon `MyMonitor` to be correctly loaded and running.
+- Changing game resolution will cause pixel read coordinate offsets; adjust `SCREEN_W`, `SCREEN_H`, and related parameters in the code accordingly.
+- YOLO models must be retrained for the current game's visual style. Different server versions (Classic, Retail) have significantly different visuals.
+- `pydirectinput` simulates DirectInput keyboard input; some anti-cheat systems may detect such input. Use on private servers or in research environments.
+- Press `Page Down` to emergency-stop all automation operations.
